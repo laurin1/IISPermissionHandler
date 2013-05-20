@@ -1,6 +1,6 @@
 <?php
 
-namespace BoxUK\IISPermissionHandler;
+namespace laurin1\IISPermissionHandler;
 
 class ScriptHandler
 {
