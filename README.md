@@ -1,4 +1,4 @@
-# IISPermissionHandler
+# IISPermissionHandlerWindowsAuth
 
 This tool allows you to run a basic script to fix IIS permissions on any directories you specify within the ```extra``` field of your ```composer.json```. This fork was added for configurations that use Windows Authentication, which needs the Users group to have read permissions. Also, removed IIS start and stop.
 
@@ -13,10 +13,10 @@ Add the following in your root composer.json file
     },
     "scripts": {
         "post-install-cmd": [
-            "laurin1\\IISPermissionHandler\\ScriptHandler::fixPermissions"
+            "laurin1\\IISPermissionHandlerWindowsAuth\\ScriptHandler::fixPermissions"
         ],
         "post-update-cmd": [
-            "laurin1\\IISPermissionHandler\\ScriptHandler::fixPermissions"
+            "laurin1\\IISPermissionHandlerWindowsAuth\\ScriptHandler::fixPermissions"
         ]
     },
     "extra": {

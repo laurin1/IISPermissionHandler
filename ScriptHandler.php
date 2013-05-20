@@ -1,6 +1,6 @@
 <?php
 
-namespace laurin1\IISPermissionHandler;
+namespace laurin1\IISPermissionHandlerWindowsAuth;
 
 class ScriptHandler
 {
