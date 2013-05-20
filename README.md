@@ -20,7 +20,7 @@ Add the following in your root composer.json file
         ]
     },
     "extra": {
-        "iis-permission-fix-folders": ["app/cache", "app/logs", "vendor"] # Defaults to: app/cache, app/logs, vendor
+        "iis-permission-fix-folders": ["app/cache", "app/logs", "vendor"] # Defaults to: app/cache, app/logs, vendor - IF YOU WANT to use only one folder, be sure to leave a preceding "," or leave off the brackets (ex. [,"vendor"] OR "vendor)!
     }
 }
 ```
