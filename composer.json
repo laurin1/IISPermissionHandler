@@ -4,7 +4,7 @@
     "minimum-stability": "stable",
     "keywords": ["iis", "permissions"],
     "repositories": [{
-        "type": "composer",
+        "type": "composer"
     }],
     "require": {
         "php": ">=5.3.3"
