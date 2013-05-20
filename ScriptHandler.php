@@ -9,7 +9,6 @@ class ScriptHandler
      * @var string Path to perm fixing script
      */
     private static $permsScript = 'FolderPerms.ps1';
-
     /**
      * @var string Path to powershell executable
      */
@@ -32,7 +31,7 @@ class ScriptHandler
 
         $command = self::getCommand($directories);
 
-        echo 'Stopping IIS and setting file permissions on folders: ' . implode(", ", $directories) . "\n";
+        echo 'Setting file permissions on folders: ' . implode(", ", $directories) . "\n";
 
         if (null == $output = shell_exec($command)) {
             throw new \RuntimeException(sprintf(
@@ -45,7 +44,7 @@ class ScriptHandler
             echo $output . "\n";
         }
 
-        echo 'Sucessfully restarted IIS and set permissions on folders: ' . implode(", ", $directories) . "\n";
+        echo 'Set permissions on folders: ' . implode(", ", $directories) . "\n";
     }
 
     /**
@@ -54,26 +53,6 @@ class ScriptHandler
     protected static function isWindows()
     {
         return (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN');
-    }
-
-    /**
-     * Get command to run our permissions fixer
-     *
-     * @param $directories
-     * @return string
-     * @throws \RuntimeException
-     */
-    protected static function getCommand($directories)
-    {
-        $permsScript = __DIR__ . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . self::$permsScript;
-
-        foreach ($directories as $name => $dir) {
-            if (!is_dir($dir)) {
-                throw new \RuntimeException(sprintf('"%s" is not a valid directory.', escapeshellarg($dir)));
-            }
-        }
-
-        return self::$powerShell . ' ' . $permsScript . ' ' . escapeshellarg(implode(" ", $directories));
     }
 
     /**
@@ -96,5 +75,25 @@ class ScriptHandler
         $options['process-timeout'] = $event->getComposer()->getConfig()->get('process-timeout');
 
         return $options;
+    }
+
+    /**
+     * Get command to run our permissions fixer
+     *
+     * @param $directories
+     * @return string
+     * @throws \RuntimeException
+     */
+    protected static function getCommand($directories)
+    {
+        $permsScript = __DIR__ . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . self::$permsScript;
+
+        foreach ($directories as $name => $dir) {
+            if (!is_dir($dir)) {
+                throw new \RuntimeException(sprintf('"%s" is not a valid directory.', escapeshellarg($dir)));
+            }
+        }
+
+        return self::$powerShell . ' ' . $permsScript . ' ' . escapeshellarg(implode(" ", $directories));
     }
 }
