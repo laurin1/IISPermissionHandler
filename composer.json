@@ -1,5 +1,5 @@
 {
-    "name": "laurin1/composer-iis-permission-handler",
+    "name": "laurin1/composer-iis-permission-handler-windows-auth",
     "description": "Composer script handling iis permissions",
     "minimum-stability": "stable",
     "keywords": ["iis", "permissions"],
@@ -10,9 +10,9 @@
         "php": ">=5.3.3"
     },
     "autoload": {
-        "psr-0": { "laurin1\\IISPermissionHandler": "" }
+        "psr-0": { "laurin1\\IISPermissionHandlerWindowsAuth": "" }
     },
-    "target-dir": "laurin1/IISPermissionHandler",
+    "target-dir": "laurin1/IISPermissionHandlerWindowsAuth",
     "extra": {
         "branch-alias": {
             "dev-master": "1.0.x-dev"
