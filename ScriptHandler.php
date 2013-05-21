@@ -6,15 +6,6 @@ class ScriptHandler
 {
 
     /**
-     * @var string Path to perm fixing script
-     */
-    private static $permsScript = 'FolderPerms.ps1';
-    /**
-     * @var string Path to powershell executable
-     */
-    private static $powerShell = '%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe';
-
-    /**
      * @param $event
      * @throws \RuntimeException
      */
@@ -29,19 +20,40 @@ class ScriptHandler
         $options = self::getOptions($event);
         $directories = $options['iis-permission-fix-folders'];
 
-        $command = self::getCommand($directories);
-
         echo 'Setting file permissions on folders: ' . implode(", ", $directories) . "\n";
 
-        if (null == $output = shell_exec($command)) {
-            throw new \RuntimeException(sprintf(
-                'An error occurred when executing the "%s" command.',
-                escapeshellarg($command)
-            ));
-        }
+        foreach ($directories as $dir) {
 
-        if (isset($options['iis-permission-fix-debug'])) {
-            echo $output . "\n";
+            if (!is_dir($dir)) {
+                throw new \RuntimeException(sprintf('"%s" is not a valid directory.', escapeshellarg($dir)));
+            }
+
+            echo 'Processing folder: ' . $dir . "\n";
+
+            $commands =
+                [
+                    "Set Administrators to owner..." => self::getSetAdministratorsOwnerCommand($dir),
+                    "Granting Users Read...." => self::getSetUsersCommand($dir),
+                    "Granting IUSR Read...." => self::getSetIUSRCommand($dir)
+                ];
+
+            foreach ($commands as $text => $command) {
+
+                echo $text . "\n";
+
+                if (null == $output = shell_exec($command)) {
+                    throw new \RuntimeException(sprintf(
+                        'An error occurred when executing the "%s" command.',
+                        escapeshellarg($command)
+                    ));
+                }
+
+                if (isset($options['iis-permission-fix-debug'])) {
+                    echo $output . "\n";
+                }
+
+            }
+
         }
 
         echo 'Set permissions on folders: ' . implode(", ", $directories) . "\n";
@@ -56,11 +68,12 @@ class ScriptHandler
     }
 
     /**
-     * @param $event
+     * @param object $event
      * @return array
      */
     protected static function getOptions($event)
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         $options = array_merge(
             array(
                 'iis-permission-fix-folders' => array(
@@ -71,7 +84,7 @@ class ScriptHandler
             ),
             $event->getComposer()->getPackage()->getExtra()
         );
-
+        /** @noinspection PhpUndefinedMethodInspection */
         $options['process-timeout'] = $event->getComposer()->getConfig()->get('process-timeout');
 
         return $options;
@@ -80,20 +93,34 @@ class ScriptHandler
     /**
      * Get command to run our permissions fixer
      *
-     * @param $directories
+     * @param string $dir
      * @return string
-     * @throws \RuntimeException
      */
-    protected static function getCommand($directories)
+    protected static function getSetAdministratorsOwnerCommand($dir)
     {
-        $permsScript = __DIR__ . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . self::$permsScript;
-
-        foreach ($directories as $name => $dir) {
-            if (!is_dir($dir)) {
-                throw new \RuntimeException(sprintf('"%s" is not a valid directory.', escapeshellarg($dir)));
-            }
-        }
-
-        return self::$powerShell . ' ' . $permsScript . ' ' . escapeshellarg(implode(" ", $directories));
+        return "icacls \"$dir\" /setowner administrators /t";
     }
+
+    /**
+     * Get command to run our permissions fixer
+     *
+     * @param string $dir
+     * @return string
+     */
+    protected static function getSetUsersCommand($dir)
+    {
+        return "icacls \"$dir\" /grant:r Users:\"(OI)(CI)\"F /t /inheritance:e";
+    }
+
+    /**
+     * Get command to run our permissions fixer
+     *
+     * @param string $dir
+     * @return string
+     */
+    protected static function getSetIUSRCommand($dir)
+    {
+        return "icacls \"$dir\" /grant:r IUSR:\"(OI)(CI)\"F /t /inheritance:e";
+    }
+
 }
