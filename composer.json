@@ -2,6 +2,7 @@
     "name": "laurin1/composer-iis-permission-handler-windows-auth",
     "description": "Composer script handling iis permissions",
     "minimum-stability": "stable",
+    "license": "MIT",
     "keywords": ["iis", "permissions"],
     "repositories": [{
         "type": "composer"
